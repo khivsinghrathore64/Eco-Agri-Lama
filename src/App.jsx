@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { getOfflineRemedy } from './lib/aiRemedies';
+import { CROP_ROTATION_CYCLES } from './lib/cropRotation';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('telemetry');
@@ -101,7 +102,20 @@ export default function App() {
         {activeTab === 'rotation' && (
           <div>
             <h2 className="text-lg font-bold text-orange-400 mb-2">🔄 Crop Rotation Board</h2>
-            <p className="text-sm text-slate-300">Manage cyclic bed patterns (Leafy $\rightarrow$ Fruiting $\rightarrow$ Root $\rightarrow$ Legume).</p>
+            <p className="text-sm text-slate-300 mb-4">Manage cyclic bed patterns across the seasons.</p>
+            <div className="space-y-3">
+              {CROP_ROTATION_CYCLES.map((cycle) => (
+                <div key={cycle.stage} className="bg-black/50 border border-purple-900/60 p-3 rounded-lg">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs font-mono text-green-400 font-bold">STAGE {cycle.stage}: {cycle.family}</span>
+                    <span className="text-[10px] bg-orange-500/20 text-orange-300 px-2 py-0.5 rounded">Cycle Active</span>
+                  </div>
+                  <p className="text-xs text-slate-200 mb-1"><strong>Examples:</strong> {cycle.examples}</p>
+                  <p className="text-xs text-purple-300 mb-1"><strong>Nutrients:</strong> {cycle.nutrients}</p>
+                  <p className="text-xs text-emerald-400/80 italic">🦇 {cycle.spookyNote}</p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -114,5 +128,4 @@ export default function App() {
       </main>
     </div>
   );
-                }
-                  
+}
