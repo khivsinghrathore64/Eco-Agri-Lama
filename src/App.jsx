@@ -1,67 +1,118 @@
 import React, { useState } from 'react';
+import { getOfflineRemedy } from './lib/aiRemedies';
 
 export default function App() {
-  const [messages, setMessages] = useState([
-    { sender: 'lama', text: 'Greetings, mortal farmer! I am the Eco Agri Lama of the Dark Harvest. What ails your crops tonight?' }
-  ]);
-  const [input, setInput] = useState('');
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [activeTab, setActiveTab] = useState('telemetry');
+  const [selectedTopic, setSelectedTopic] = useState('pests');
+  const [remedyResult, setRemedyResult] = useState(null);
 
-  const handleSend = (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    const newMessages = [...messages, { sender: 'user', text: input }];
-    setMessages(newMessages);
-    setInput('');
-
-    setTimeout(() => {
-      setMessages(prev => [
-        ...prev,
-        { sender: 'lama', text: 'The spirits whisper of organic neem oil and rich compost under the pale moon. Guard your harvest well!' }
-      ]);
-    }, 1000);
+  const handleConsultOracle = () => {
+    const result = getOfflineRemedy(selectedTopic);
+    setRemedyResult(result);
   };
 
   return (
-    <div style={{ backgroundColor: '#0a0512', color: '#e2e8f0', minHeight: '100vh', fontFamily: 'sans-serif', padding: '16px' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #ff7518', paddingBottom: '12px', marginBottom: '16px' }}>
-        <h1 style={{ fontSize: '1.25rem', color: '#39ff14', margin: 0 }}>Eco Agri Lama 🎃</h1>
-        <button 
-          onClick={() => setSoundEnabled(!soundEnabled)} 
-          style={{ background: '#ff7518', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', fontWeight: 'bold' }}>
-          {soundEnabled ? '🔊 Spooky Sound: ON' : '🔇 Muted'}
-        </button>
+    <div className="min-h-screen bg-[#0a0512] text-slate-100 p-4 pb-20">
+      {/* Header */}
+      <header className="flex justify-between items-center mb-6 border-b border-purple-900/50 pb-4">
+        <div>
+          <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-orange-500 text-glow-green">
+            Eco Agri Lama
+          </h1>
+          <p className="text-xs text-purple-300">🎃 Dark Harvest Agricultural Companion</p>
+        </div>
+        <div className="bg-purple-950/60 border border-green-500/30 px-3 py-1 rounded-full text-xs text-green-400 font-mono glow-orange">
+          SYSTEM ONLINE
+        </div>
       </header>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '80px' }}>
-        {messages.map((msg, index) => (
-          <div key={index} style={{ 
-            alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-            backgroundColor: msg.sender === 'user' ? '#ff7518' : '#1a102f',
-            color: msg.sender === 'user' ? '#fff' : '#e2e8f0',
-            padding: '10px 14px',
-            borderRadius: '8px',
-            maxWidth: '85%',
-            border: msg.sender === 'lama' ? '1px solid #39ff14' : 'none'
-          }}>
-            {msg.text}
-          </div>
+      {/* Navigation Tabs */}
+      <nav className="grid grid-cols-4 gap-2 mb-6">
+        {['telemetry', 'chat', 'rotation', 'carbon'].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`py-2 text-xs font-bold rounded-lg uppercase tracking-wider transition-all ${
+              activeTab === tab
+                ? 'bg-green-500 text-black shadow-lg shadow-green-500/20'
+                : 'bg-purple-900/30 text-purple-300 border border-purple-800/40 hover:bg-purple-800/40'
+            }`}
+          >
+            {tab}
+          </button>
         ))}
-      </div>
+      </nav>
 
-      <form onSubmit={handleSend} style={{ position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: '#0a0512', padding: '12px', borderTop: '1px solid #1a102f', display: 'flex', gap: '8px' }}>
-        <input 
-          type="text" 
-          value={input} 
-          onChange={(e) => setInput(e.target.value)} 
-          placeholder="Ask your agricultural question..." 
-          style={{ flex: 1, padding: '10px', borderRadius: '4px', border: '1px solid #39ff14', backgroundColor: '#1a102f', color: '#fff' }}
-        />
-        <button type="submit" style={{ backgroundColor: '#39ff14', color: '#0a0512', border: 'none', padding: '10px 16px', borderRadius: '4px', fontWeight: 'bold' }}>
-          Send
-        </button>
-      </form>
+      {/* Main Content Area */}
+      <main className="bg-purple-950/20 border border-purple-900/40 rounded-xl p-4 shadow-xl">
+        {activeTab === 'telemetry' && (
+          <div>
+            <h2 className="text-lg font-bold text-orange-400 mb-2">👻 Field Telemetry</h2>
+            <p className="text-sm text-slate-300 mb-4">Live soil and weather metrics under the pale moon.</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-black/40 border border-green-500/20 p-3 rounded-lg">
+                <span className="text-xs text-green-400">SOIL MOISTURE</span>
+                <p className="text-xl font-mono font-bold">42% (Optimal)</p>
+              </div>
+              <div className="bg-black/40 border border-orange-500/20 p-3 rounded-lg">
+                <span className="text-xs text-orange-400">AMBIENT TEMP</span>
+                <p className="text-xl font-mono font-bold">18.4°C</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'chat' && (
+          <div>
+            <h2 className="text-lg font-bold text-green-400 mb-2">🔮 Oracle AI Remedy Chat</h2>
+            <p className="text-sm text-slate-300 mb-4">Consult the agricultural spirit for organic pest & disease advice.</p>
+            
+            <div className="mb-4">
+              <label className="block text-xs text-purple-300 mb-2">SELECT DISTRESS TOPIC:</label>
+              <select 
+                value={selectedTopic} 
+                onChange={(e) => setSelectedTopic(e.target.value)}
+                className="w-full bg-black/60 border border-purple-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-green-400"
+              >
+                <option value="pests">Phantom Aphids / Pests</option>
+                <option value="soil">Cursed Acidic Soil</option>
+                <option value="irrigation">Blood Moon Irrigation</option>
+                <option value="disease">Cryptic Blight Disease</option>
+              </select>
+            </div>
+
+            <button 
+              onClick={handleConsultOracle}
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-black font-bold py-2 rounded-lg text-sm mb-4 shadow-lg shadow-green-500/20"
+            >
+              Consult the Oracle 🎃
+            </button>
+
+            {remedyResult && (
+              <div className="bg-black/60 border border-green-500/40 p-4 rounded-lg">
+                <h3 className="text-sm font-bold text-orange-400 mb-1">{remedyResult.title}</h3>
+                <p className="text-xs text-slate-300 mb-2"><strong>Symptom:</strong> {remedyResult.symptom}</p>
+                <p className="text-xs text-green-300"><strong>Spooky Remedy:</strong> {remedyResult.remedy}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'rotation' && (
+          <div>
+            <h2 className="text-lg font-bold text-orange-400 mb-2">🔄 Crop Rotation Board</h2>
+            <p className="text-sm text-slate-300">Manage cyclic bed patterns (Leafy $\rightarrow$ Fruiting $\rightarrow$ Root $\rightarrow$ Legume).</p>
+          </div>
+        )}
+
+        {activeTab === 'carbon' && (
+          <div>
+            <h2 className="text-lg font-bold text-green-400 mb-2">🌱 Soil Carbon Ledger</h2>
+            <p className="text-sm text-slate-300">Track regenerative practices and aggregated $kg\ CO_2e$ offset.</p>
+          </div>
+        )}
+      </main>
     </div>
   );
-}
+                }
+                  
