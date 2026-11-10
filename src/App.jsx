@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { getOfflineRemedy } from './lib/aiRemedies';
 import { CROP_ROTATION_CYCLES } from './lib/cropRotation';
+import { CARBON_PRACTICES, calculateTotalCarbonOffset } from './lib/soilCarbon';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('telemetry');
@@ -11,6 +12,8 @@ export default function App() {
     const result = getOfflineRemedy(selectedTopic);
     setRemedyResult(result);
   };
+
+  const totalCarbon = calculateTotalCarbonOffset(CARBON_PRACTICES);
 
   return (
     <div className="min-h-screen bg-[#0a0512] text-slate-100 p-4 pb-20">
@@ -122,7 +125,25 @@ export default function App() {
         {activeTab === 'carbon' && (
           <div>
             <h2 className="text-lg font-bold text-green-400 mb-2">🌱 Soil Carbon Ledger</h2>
-            <p className="text-sm text-slate-300">Track regenerative practices and aggregated $kg\ CO_2e$ offset.</p>
+            <p className="text-sm text-slate-300 mb-3">Track regenerative practices and aggregated carbon offset.</p>
+            
+            <div className="bg-green-950/30 border border-green-500/40 p-3 rounded-lg mb-4 text-center">
+              <span className="text-xs text-green-400 block mb-1">TOTAL AGGREGATED OFFSET</span>
+              <span className="text-2xl font-mono font-bold text-green-300">{totalCarbon} kg CO₂e</span>
+            </div>
+
+            <div className="space-y-3">
+              {CARBON_PRACTICES.map((item) => (
+                <div key={item.id} className="bg-black/50 border border-purple-900/60 p-3 rounded-lg">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs font-bold text-orange-400">{item.practice}</span>
+                    <span className="text-xs font-mono text-green-400">+{item.impactKgCo2e} kg</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 mb-1">Logged on: {item.date} • <span className="text-purple-300">{item.status}</span></p>
+                  <p className="text-xs text-emerald-300/80 italic">👻 {item.spookyNote}</p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </main>
