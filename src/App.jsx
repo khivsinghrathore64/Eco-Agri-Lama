@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import { createClient } from '@base44/sdk';
+
+export const base44 = createClient({
+  appId: '6ae195e49f2f7e74bc25ed82',
+});
 
 export default function App() {
   const [currentView, setCurrentView] = useState('landing'); // 'landing' | 'login' | 'oracle' | 'crypt'
